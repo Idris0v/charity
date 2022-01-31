@@ -21,25 +21,30 @@ contract Charity is Initializable, OwnableUpgradeable {
     constructor() initializer {}
 
     function makeDonation() external payable {
-
         uint sum = donations[msg.sender] + msg.value;
-        require(donations[msg.sender] < sum, "Donation overflows uint256"); //TODO Handle overflow errors
+        require(donations[msg.sender] < sum, "Donation overflows uint256"); // TODO How to handle overflow errors?
         if (donations[msg.sender] == 0) {
             donators.push(msg.sender);
         }
         donations[msg.sender] = sum;
+
+        emit DonationSuccessful();
     }
 
-    function withdrawBalance(address to, uint amount) external onlyOwner { // TODO Do I need ReentrancyGuard
+    function withdrawBalance(address to, uint amount) external onlyOwner { // TODO Do I need ReentrancyGuard?
         require(address(this).balance > amount, "Not enough funds");
         payable(to).transfer(amount);
     }
 
-    function getAllDonators() external view returns(address[] memory) {
+    function getAllDonators() external view returns (address[] memory) {
         return donators;
     }
 
     receive() external payable {
-        revert ImproperFunctionCall("use makeDonation() function to donate");
+        revert ImproperFunctionCall("Use makeDonation() function to donate");
+    }
+
+    fallback () external {
+        revert ImproperFunctionCall("No function matches this call");
     }
 }
