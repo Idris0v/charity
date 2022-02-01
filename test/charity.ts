@@ -1,7 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { BigNumber } from "ethers";
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 import { it } from "mocha";
 import { Charity, Charity__factory } from "../typechain";
 
@@ -17,7 +17,7 @@ describe("Charity", function () {
     user1 = signers[1];
     user2 = signers[2];
     const Charity: Charity__factory = await ethers.getContractFactory("Charity");
-    charity = await Charity.deploy();
+    charity = (await upgrades.deployProxy(Charity)) as Charity;
     await charity.deployed();
   });
 
