@@ -21,12 +21,11 @@ contract Charity is Initializable, OwnableUpgradeable {
     constructor() initializer {}
 
     function makeDonation() external payable {
-        uint sum = donations[msg.sender] + msg.value;
-        require(donations[msg.sender] < sum, "Donation overflows uint256"); // TODO How to handle overflow errors?
-        if (donations[msg.sender] == 0) {
-            donators.push(msg.sender);
+        address msgSender = msg.sender;
+        if (donations[msgSender] == 0) {
+            donators.push(msgSender);
         }
-        donations[msg.sender] = sum;
+        donations[msgSender] += msg.value;
 
         emit DonationSuccessful();
     }
@@ -42,9 +41,5 @@ contract Charity is Initializable, OwnableUpgradeable {
 
     receive() external payable {
         revert ImproperFunctionCall("Use makeDonation() function to donate");
-    }
-
-    fallback () external {
-        revert ImproperFunctionCall("No function matches this call");
     }
 }
